@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 💰 Sistema de Controle de Despesas Pessoais
 
 Sistema web desenvolvido em Flask para controle financeiro pessoal.
@@ -18,3 +19,7 @@ Sistema web desenvolvido em Flask para controle financeiro pessoal.
 ```bash
 pip install -r requirements.txt
 python app.py
+=======
+# controle-despesas
+Sistema de controle de despesas pessoais com Flask
+>>>>>>> 85b17e944bb227afa4d4544e8aa08fb47b638ca5
