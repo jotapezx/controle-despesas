@@ -22,4 +22,3 @@ python app.py
 =======
 # controle-despesas
 Sistema de controle de despesas pessoais com Flask
->>>>>>> 85b17e944bb227afa4d4544e8aa08fb47b638ca5
