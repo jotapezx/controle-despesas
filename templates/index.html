@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Dashboard Financeiro</h1>
+    </div>
+</div>
+
+<!-- Cards de Resumo -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Total Receitas</h5>
+                <h2 class="card-text">R$ {{ "%.2f"|format(total_receitas) }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-danger">
+            <div class="card-body">
+                <h5 class="card-title">Total Despesas</h5>
+                <h2 class="card-text">R$ {{ "%.2f"|format(total_despesas) }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-{{ 'success' if saldo >= 0 else 'danger' }}">
+            <div class="card-body">
+                <h5 class="card-title">Saldo do Mês</h5>
+                <h2 class="card-text">R$ {{ "%.2f"|format(saldo) }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de Transações -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Transações do Mês</h5>
+                <a href="{{ url_for('adicionar_transacao') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Nova Transação
+                </a>
+            </div>
+            <div class="card-body">
+                {% if transacoes %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Descrição</th>
+                                <th>Categoria</th>
+                                <th>Tipo</th>
+                                <th>Valor</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transacao in transacoes %}
+                            <tr>
+                                <td>{{ transacao.data.strftime('%d/%m/%Y') }}</td>
+                                <td>{{ transacao.descricao }}</td>
+                                <td>{{ transacao.categoria.nome }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if transacao.tipo == 'receita' else 'danger' }}">
+                                        {{ 'Receita' if transacao.tipo == 'receita' else 'Despesa' }}
+                                    </span>
+                                </td>
+                                <td class="{{ 'text-success' if transacao.tipo == 'receita' else 'text-danger' }}">
+                                    R$ {{ "%.2f"|format(transacao.valor) }}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('editar_transacao', id=transacao.id) }}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                       <i class="fas fa-edit"></i> Editar
+                                    </a>
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-danger" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#modalExcluir"
+                                            data-transacao-id="{{ transacao.id }}"
+                                            data-transacao-desc="{{ transacao.descricao }}">
+                                        <i class="fas fa-trash"></i> Excluir
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-center text-muted">Nenhuma transação encontrada para este mês.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmação de Exclusão -->
+<div class="modal fade" id="modalExcluir" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir a transação: <strong id="transacaoDesc"></strong>?</p>
+                <p class="text-muted">Esta ação não pode ser desfeita.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <a href="#" class="btn btn-danger" id="btnConfirmarExcluir">Excluir</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Configurar o modal de exclusão
+document.addEventListener('DOMContentLoaded', function() {
+    const modalExcluir = document.getElementById('modalExcluir');
+    
+    modalExcluir.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const transacaoId = button.getAttribute('data-transacao-id');
+        const transacaoDesc = button.getAttribute('data-transacao-desc');
+        
+        // Atualizar o modal com os dados da transação
+        document.getElementById('transacaoDesc').textContent = transacaoDesc;
+        document.getElementById('btnConfirmarExcluir').href = "/excluir/" + transacaoId;
+    });
+});
+</script>
+
+{% endblock %}

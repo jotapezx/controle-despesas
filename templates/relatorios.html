@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Relatórios Financeiros</h1>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="mes" class="form-label">Mês</label>
+                        <select class="form-select" id="mes" name="mes">
+                            {% for i in range(1, 13) %}
+                            <option value="{{ i }}" {{ 'selected' if i == mes }}>{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="ano" class="form-label">Ano</label>
+                        <select class="form-select" id="ano" name="ano">
+                            {% for i in range(2020, 2031) %}
+                            <option value="{{ i }}" {{ 'selected' if i == ano }}>{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resumo -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-success">
+            <div class="card-body text-center">
+                <h5>Total Receitas</h5>
+                <h3>R$ {{ "%.2f"|format(total_receitas) }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-danger">
+            <div class="card-body text-center">
+                <h5>Total Despesas</h5>
+                <h3>R$ {{ "%.2f"|format(total_despesas) }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-{{ 'success' if saldo >= 0 else 'danger' }}">
+            <div class="card-body text-center">
+                <h5>Saldo</h5>
+                <h3>R$ {{ "%.2f"|format(saldo) }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detalhamento por Categoria -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Despesas por Categoria</h5>
+            </div>
+            <div class="card-body">
+                {% if despesas_por_categoria %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Categoria</th>
+                                <th class="text-end">Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for categoria, valor in despesas_por_categoria.items() %}
+                            <tr>
+                                <td>{{ categoria }}</td>
+                                <td class="text-end text-danger">R$ {{ "%.2f"|format(valor) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted text-center">Nenhuma despesa encontrada</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Receitas por Categoria</h5>
+            </div>
+            <div class="card-body">
+                {% if receitas_por_categoria %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Categoria</th>
+                                <th class="text-end">Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for categoria, valor in receitas_por_categoria.items() %}
+                            <tr>
+                                <td>{{ categoria }}</td>
+                                <td class="text-end text-success">R$ {{ "%.2f"|format(valor) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted text-center">Nenhuma receita encontrada</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
